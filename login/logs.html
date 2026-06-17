@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Blockchain Logs</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:       #040810;
+            --surface:  #080f1e;
+            --card:     #0b1526;
+            --border:   #112240;
+            --accent:   #00d4ff;
+            --accent2:  #0066ff;
+            --valid:    #00ff9d;
+            --invalid:  #ff3860;
+            --text:     #c8d8f0;
+            --muted:    #3a5278;
+            --head-bg:  #050d1a;
+            --mono:     'IBM Plex Mono', monospace;
+            --display:  'Orbitron', monospace;
+        }
+
+        body {
+            font-family: var(--mono);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 36px 28px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Scanline overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,212,255,0.015) 2px,
+                rgba(0,212,255,0.015) 4px
+            );
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* Background glow orbs */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 700px 500px at 10% 20%, rgba(0,102,255,0.07) 0%, transparent 65%),
+                radial-gradient(ellipse 500px 400px at 90% 80%, rgba(0,212,255,0.05) 0%, transparent 65%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .page-wrapper {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Header ── */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; left: 0;
+            width: 120px; height: 1px;
+            background: linear-gradient(90deg, var(--accent), transparent);
+        }
+
+        .header-left { display: flex; align-items: center; gap: 16px; }
+
+        .chain-icon {
+            width: 44px; height: 44px;
+            background: linear-gradient(135deg, var(--accent2), var(--accent));
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px;
+            box-shadow: 0 0 20px rgba(0,212,255,0.3);
+        }
+
+        h2 {
+            font-family: var(--display);
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(0,212,255,0.4);
+        }
+
+        .subtitle {
+            font-size: 10px;
+            color: var(--muted);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-top: 3px;
+        }
+
+        /* ── Status Card ── */
+        .status-card {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 18px;
+            font-size: 11px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .status-label { color: var(--muted); font-size: 10px; margin-right: 4px; }
+
+        #status {
+            font-family: var(--display);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: var(--text);
+            transition: color 0.3s;
+        }
+
+        #status.valid {
+            color: var(--valid);
+            text-shadow: 0 0 12px var(--valid);
+        }
+
+        #status.invalid {
+            color: var(--invalid);
+            text-shadow: 0 0 12px var(--invalid);
+        }
+
+        .status-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--muted);
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+
+        .status-dot.valid  { background: var(--valid);  box-shadow: 0 0 10px var(--valid);  animation: blink 2s ease-in-out infinite; }
+        .status-dot.invalid{ background: var(--invalid); box-shadow: 0 0 10px var(--invalid); }
+
+        @keyframes blink {
+            0%,100% { opacity: 1; } 50% { opacity: 0.3; }
+        }
+
+        /* ── Table wrapper ── */
+        .table-wrapper {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 0 0 1px rgba(0,212,255,0.04), 0 30px 70px rgba(0,0,0,0.6);
+            position: relative;
+        }
+
+        .table-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
+            opacity: 0.5;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: transparent;
+        }
+
+        th, td {
+            border: none;
+            border-bottom: 1px solid var(--border);
+            padding: 12px 14px;
+            font-size: 11px;
+            font-family: var(--mono);
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        thead tr {
+            background: var(--head-bg);
+        }
+
+        th {
+            background: transparent;
+            color: var(--accent);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 14px 14px;
+        }
+
+        th:first-child { border-radius: 0; }
+
+        /* Column accent lines */
+        th:first-child { border-left: 3px solid var(--accent2); }
+
+        tbody tr {
+            transition: background 0.15s;
+        }
+
+        tbody tr:hover {
+            background: rgba(0, 212, 255, 0.04);
+        }
+
+        tbody tr:last-child td { border-bottom: none; }
+
+        td {
+            color: var(--text);
+        }
+
+        /* Index badge */
+        td:first-child {
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        /* Hash cells */
+        .hash-cell {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: #4a7fa5;
+            letter-spacing: 0.04em;
+        }
+
+        /* Action badge */
+        .action-badge {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            background: rgba(0,102,255,0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(0,102,255,0.25);
+        }
+
+        /* Timestamp */
+        .ts { color: var(--muted); font-size: 10px; }
+
+        /* IP */
+        .ip-cell { color: #7dd3a8; }
+
+        /* Email */
+        .email-cell { color: #a78bfa; }
+
+        /* Valid / Invalid kept for JS compatibility */
+        .valid  { color: var(--valid)  !important; font-weight: 600; }
+        .invalid{ color: var(--invalid)!important; font-weight: 600; }
+
+        /* Loading skeleton row */
+        .skeleton td {
+            background: linear-gradient(90deg, var(--border) 25%, #162035 50%, var(--border) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s infinite;
+            color: transparent !important;
+            border-radius: 4px;
+        }
+
+        @keyframes shimmer {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 10px;
+            color: var(--muted);
+            letter-spacing: 0.1em;
+        }
+    </style>
+</head>
+
+<body>
+<div class="page-wrapper">
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <div class="chain-icon">🔗</div>
+            <div>
+                <h2>BLOCKCHAIN LOGS</h2>
+                <div class="subtitle">immutable audit trail · tamper-evident ledger</div>
+            </div>
+        </div>
+
+        <div class="status-card">
+            <div class="status-dot" id="statusDot"></div>
+            <span class="status-label">CHAIN STATUS —</span>
+            <span id="status">Checking...</span>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>IP</th>
+                    <th>Email</th>
+                    <th>Action</th>
+                    <th>Old</th>
+                    <th>New</th>
+                    <th>Time</th>
+                    <th>Prev Hash</th>
+                    <th>Hash</th>
+                    <th>Next Hash</th>
+                </tr>
+            </thead>
+            <tbody id="logTable">
+                <!-- skeleton rows while loading -->
+                <tr class="skeleton"><td>0</td><td>loading</td><td>loading</td><td>loading</td><td>—</td><td>—</td><td>loading</td><td>0x000000</td><td>0x000000</td><td>0x000000</td></tr>
+                <tr class="skeleton"><td>1</td><td>loading</td><td>loading</td><td>loading</td><td>—</td><td>—</td><td>loading</td><td>0x000000</td><td>0x000000</td><td>0x000000</td></tr>
+                <tr class="skeleton"><td>2</td><td>loading</td><td>loading</td><td>loading</td><td>—</td><td>—</td><td>loading</td><td>0x000000</td><td>0x000000</td><td>0x000000</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer">⬡ distributed ledger protocol · read-only view</div>
+
+</div>
+
+<script>
+
+// 🔹 Load Logs
+async function loadLogs() {
+    let res = await fetch("/logs");
+    let data = await res.json();
+
+    let table = document.getElementById("logTable");
+    table.innerHTML = "";
+
+    data.forEach(log => {
+        let row = `
+        <tr>
+            <td>${log.index}</td>
+            <td class="ip-cell">${log.ip}</td>
+            <td class="email-cell">${log.email}</td>
+            <td><span class="action-badge">${log.action}</span></td>
+            <td>${log.old_value}</td>
+            <td>${log.new_value}</td>
+            <td class="ts">${log.timestamp}</td>
+            <td class="hash-cell">${log.prev_hash.substring(0,10)}...</td>
+            <td class="hash-cell">${log.hash.substring(0,10)}...</td>
+            <td class="hash-cell">${log.next_hash.substring(0,10)}...</td>
+        </tr>
+        `;
+        table.innerHTML += row;
+    });
+}
+
+// 🔹 Check Blockchain Status
+async function checkStatus() {
+    let res = await fetch("/verify");
+    let data = await res.json();
+
+    let statusEl = document.getElementById("status");
+    let dot = document.getElementById("statusDot");
+
+    if (data.status === "valid") {
+        statusEl.innerText = "VALID ";
+        statusEl.className = "valid";
+        dot.className = "status-dot valid";
+    } else {
+        statusEl.innerText = "TAMPERED ";
+        statusEl.className = "invalid";
+        dot.className = "status-dot invalid";
+    }
+}
+
+// load both
+loadLogs();
+checkStatus();
+
+</script>
+
+</body>
+</html>

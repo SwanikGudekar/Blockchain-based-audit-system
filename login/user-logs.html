@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 40px;
+            background: #f4f6f9;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #333;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f1f1f1;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: white;
+            font-size: 12px;
+        }
+
+        .ADDRESS_CHANGE { background: orange; }
+        .LOGIN { background: green; }
+        .REGISTER { background: blue; }
+
+        .empty {
+            text-align: center;
+            padding: 20px;
+            color: gray;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+    <h2 id="welcome"></h2>
+    <p><b>Email:</b> <span id="email"></span></p>
+    <p><b>Address:</b> <span id="address"></span></p>
+</div>
+
+<div class="card">
+    <h3>User Activity Logs</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Action</th>
+                <th>Old Value</th>
+                <th>New Value</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody id="logTable"></tbody>
+    </table>
+</div>
+
+<script>
+
+// 🔹 Get logged-in user from localStorage
+let user = JSON.parse(localStorage.getItem("user"));
+
+if (user) {
+    document.getElementById("welcome").innerText = "Welcome " + user.username;
+    document.getElementById("email").innerText = user.email;
+    document.getElementById("address").innerText = user.address;
+}
+
+// 🔹 Load logs
+async function loadLogs() {
+    let table = document.getElementById("logTable");
+
+    table.innerHTML = `<tr><td colspan="5">Loading...</td></tr>`;
+
+    try {
+        let res = await fetch("/logs"); // Flask API
+        let data = await res.json();
+
+        console.log("Logs:", data);
+
+        if (!user) {
+            table.innerHTML = `<tr><td colspan="5" class="empty">User not logged in</td></tr>`;
+            return;
+        }
+
+        // 🔹 Filter logs for this user
+        let filtered = data.filter(log =>
+            log.email.trim().toLowerCase() === user.email.trim().toLowerCase()
+        );
+
+        if (filtered.length === 0) {
+            table.innerHTML = `<tr><td colspan="5" class="empty">No logs found</td></tr>`;
+            return;
+        }
+
+        table.innerHTML = "";
+
+        // 🔹 Show latest first
+        filtered.reverse().forEach(log => {
+
+            let badgeClass = log.action.replace(/\s+/g, "_");
+
+            let row = `
+                <tr>
+                    <td>${log.email}</td>
+                    <td><span class="badge ${badgeClass}">${log.action}</span></td>
+                    <td>${log.old_value || "-"}</td>
+                    <td>${log.new_value || "-"}</td>
+                    <td>${log.timestamp}</td>
+                </tr>
+            `;
+
+            table.innerHTML += row;
+        });
+
+    } catch (err) {
+        table.innerHTML = `
+            <tr>
+                <td colspan="5" class="empty">Error loading logs</td>
+            </tr>
+        `;
+        console.error(err);
+    }
+}
+
+// 🔹 Load logs on page load
+loadLogs();
+
+</script>
+
+</body>
+</html>

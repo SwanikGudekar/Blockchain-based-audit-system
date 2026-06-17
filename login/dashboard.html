@@ -1,0 +1,666 @@
+<!--
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Dashboard</h2>
+
+<h3 id="welcome"></h3>
+
+<p>Email: <span id="email"></span></p>
+<p>Address: <span id="address"></span></p>
+
+<hr>
+
+<h3>Update Profile</h3>
+
+<form id="updateForm">
+    <input type="email" name="email" id="emailInput" required><br><br>
+    <input type="text" name="address" id="addressInput"><br><br>
+    <button type="submit">Update</button>
+</form>
+
+<script>
+
+// 🔹 Load from localStorage
+let user = JSON.parse(localStorage.getItem("user"));
+
+if (user) {
+    document.getElementById("welcome").innerText = "Welcome " + user.username;
+    document.getElementById("email").innerText = user.email;
+    document.getElementById("address").innerText = user.address;
+
+    document.getElementById("emailInput").value = user.email;
+    document.getElementById("addressInput").value = user.address;
+}
+
+// 🔹 Update
+document.getElementById("updateForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    let formData = new FormData(this);
+
+    let res = await fetch("/update", {
+        method: "POST",
+        body: formData
+    });
+
+    if (res.ok) {
+
+        // update localStorage
+        user.email = formData.get("email");
+        user.address = formData.get("address");
+
+        localStorage.setItem("user", JSON.stringify(user));
+
+        alert("Updated Successfully");
+        location.reload();
+    }
+});
+
+</script>
+
+</body>
+</html>
+
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:      #03070f;
+            --surface: #060d18;
+            --card:    #09131f;
+            --border:  #102035;
+            --accent:  #7c3aed;
+            --accent2: #06b6d4;
+            --text:    #cbd5e8;
+            --muted:   #2a4060;
+            --success: #10b981;
+            --mono:    'Share Tech Mono', monospace;
+            --sans:    'Rajdhani', sans-serif;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 32px 24px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background-image: radial-gradient(rgba(124,58,237,0.15) 1px, transparent 1px);
+            background-size: 32px 32px;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: fixed; inset: 0;
+            background:
+                radial-gradient(ellipse 700px 500px at 5% 10%,  rgba(124,58,237,0.07) 0%, transparent 65%),
+                radial-gradient(ellipse 600px 400px at 90% 90%, rgba(6,182,212,0.06)  0%, transparent 65%);
+            pointer-events: none;
+        }
+
+        .page {
+            position: relative; z-index: 1;
+            max-width: 900px; margin: 0 auto;
+            animation: fadeUp 0.5s ease both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Topbar ── */
+        .topbar {
+            display: flex; align-items: center;
+            justify-content: space-between; flex-wrap: wrap;
+            gap: 14px; margin-bottom: 28px;
+            padding-bottom: 22px; border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+
+        .topbar::after {
+            content: ''; position: absolute; bottom: -1px; left: 0;
+            width: 80px; height: 1px;
+            background: linear-gradient(90deg, var(--accent), transparent);
+        }
+
+        .brand { display: flex; align-items: center; gap: 12px; }
+
+        .brand-icon {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            font-size: 19px; box-shadow: 0 0 20px rgba(124,58,237,0.35);
+        }
+
+        .brand-name { font-size: 18px; font-weight: 700; letter-spacing: 0.08em; color: #fff; text-transform: uppercase; }
+        .brand-sub  { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 0.14em; margin-top: 2px; }
+
+        .online-badge {
+            display: inline-flex; align-items: center; gap: 7px;
+            background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2);
+            color: var(--success); font-family: var(--mono); font-size: 10px;
+            letter-spacing: 0.1em; padding: 5px 12px; border-radius: 100px;
+        }
+
+        .dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--success); box-shadow: 0 0 8px var(--success);
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+        /* ── Welcome banner ── */
+        .welcome-banner {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 18px; padding: 24px 28px; margin-bottom: 24px;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 16px; position: relative; overflow: hidden;
+        }
+
+        .welcome-banner::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
+            opacity: 0.5;
+        }
+
+        .welcome-bg {
+            position: absolute; right: -40px; top: -40px;
+            width: 200px; height: 200px;
+            background: radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .welcome-left h3 { font-size: 26px; font-weight: 700; letter-spacing: 0.03em; color: #fff; }
+        .welcome-left p  { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.08em; margin-top: 6px; }
+
+        .avatar {
+            width: 54px; height: 54px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; box-shadow: 0 0 20px rgba(124,58,237,0.3); flex-shrink: 0;
+        }
+
+        /* ── TABS ── */
+        .tabs {
+            display: flex; gap: 4px;
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 14px; padding: 5px;
+            margin-bottom: 22px; width: fit-content;
+        }
+
+        .tab-btn {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 22px; border: none; border-radius: 10px;
+            font-family: var(--sans); font-size: 14px; font-weight: 600;
+            letter-spacing: 0.06em; text-transform: uppercase;
+            cursor: pointer; transition: all 0.2s;
+            color: var(--muted); background: transparent;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #fff; box-shadow: 0 4px 16px rgba(124,58,237,0.3);
+        }
+
+        .tab-btn:not(.active):hover { color: var(--text); background: rgba(255,255,255,0.04); }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; animation: fadeUp 0.3s ease both; }
+
+        /* ── Info cards ── */
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 22px; }
+        @media (max-width: 540px) { .info-grid { grid-template-columns: 1fr; } }
+
+        .info-card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 14px; padding: 18px 20px;
+            display: flex; align-items: flex-start; gap: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .info-card:hover { border-color: rgba(124,58,237,0.35); }
+
+        .info-card-icon { width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+        .info-card-icon.purple { background: rgba(124,58,237,0.15); }
+        .info-card-icon.cyan   { background: rgba(6,182,212,0.12); }
+        .info-card-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; }
+        .info-card-value { font-family: var(--mono); font-size: 13px; color: var(--text); word-break: break-all; }
+
+        /* ── Form card ── */
+        .form-card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 18px; padding: 28px; position: relative; overflow: hidden;
+        }
+
+        .form-card::before {
+            content: ''; position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent2), transparent); opacity: 0.4;
+        }
+
+        .form-card-title { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+        .form-card-title h3 { font-size: 17px; font-weight: 700; letter-spacing: 0.06em; color: #fff; text-transform: uppercase; }
+
+        .tag {
+            font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em;
+            color: var(--accent2); background: rgba(6,182,212,0.1);
+            border: 1px solid rgba(6,182,212,0.2); padding: 3px 8px; border-radius: 4px;
+        }
+
+        .field { margin-bottom: 18px; }
+        .field label { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; color: var(--muted); text-transform: uppercase; margin-bottom: 7px; }
+        .input-wrap { position: relative; display: flex; align-items: center; }
+        .input-icon { position: absolute; left: 13px; color: var(--muted); display: flex; pointer-events: none; transition: color 0.2s; }
+        .input-wrap:focus-within .input-icon { color: var(--accent2); }
+
+        .field input {
+            width: 100%; background: var(--surface); border: 1px solid var(--border);
+            border-radius: 10px; padding: 13px 14px 13px 42px;
+            font-family: var(--mono); font-size: 13px; color: var(--text);
+            outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .field input::placeholder { color: var(--muted); }
+        .field input:focus { border-color: var(--accent2); box-shadow: 0 0 0 3px rgba(6,182,212,0.1); }
+
+        hr { border: none; border-top: 1px solid var(--border); margin: 22px 0 20px; }
+
+        button[type="submit"] {
+            width: 100%; padding: 14px; border: none; border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #fff; font-family: var(--sans); font-size: 15px; font-weight: 700;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            cursor: pointer; transition: transform 0.15s, box-shadow 0.2s;
+        }
+
+        button[type="submit"]:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(124,58,237,0.35); }
+        button[type="submit"]:active { transform: translateY(0); }
+
+        /* ── LOGS TAB ── */
+        .logs-header {
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 12px; margin-bottom: 18px;
+        }
+
+        .logs-title { display: flex; align-items: center; gap: 10px; }
+        .logs-title h3 { font-size: 17px; font-weight: 700; letter-spacing: 0.06em; color: #fff; text-transform: uppercase; }
+
+        .log-count {
+            font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em;
+            color: var(--accent); background: rgba(124,58,237,0.12);
+            border: 1px solid rgba(124,58,237,0.25); padding: 3px 9px; border-radius: 4px;
+        }
+
+        .refresh-btn {
+            display: flex; align-items: center; gap: 7px;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 8px; color: var(--muted);
+            font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+            padding: 8px 14px; cursor: pointer; transition: all 0.2s;
+        }
+
+        .refresh-btn:hover { color: var(--accent2); border-color: var(--accent2); }
+
+        .logs-table-wrap {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 16px; overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative;
+        }
+
+        .logs-table-wrap::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
+            opacity: 0.4;
+        }
+
+        table { width: 100%; border-collapse: collapse; background: transparent; }
+        thead tr { background: var(--surface); }
+
+        th {
+            padding: 13px 16px; text-align: left;
+            font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em;
+            text-transform: uppercase; color: var(--accent2); font-weight: 600;
+            border: none; border-bottom: 1px solid var(--border);
+        }
+
+        th:first-child { border-left: 3px solid var(--accent); }
+
+        td {
+            padding: 13px 16px; border: none;
+            border-bottom: 1px solid var(--border);
+            font-family: var(--mono); font-size: 12px; color: var(--text);
+        }
+
+        tbody tr { transition: background 0.15s; }
+        tbody tr:hover { background: rgba(124,58,237,0.05); }
+        tbody tr:last-child td { border-bottom: none; }
+
+        .td-ip    { color: #7dd3a8; }
+        .td-email { color: #a78bfa; }
+        .td-ts    { color: var(--muted); font-size: 11px; }
+
+        .action-badge {
+            display: inline-block; padding: 3px 9px; border-radius: 4px;
+            font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+        }
+
+        .action-LOGIN          { background: rgba(16,185,129,0.1);   color: #10b981; border: 1px solid rgba(16,185,129,0.2); }
+        .action-REGISTER       { background: rgba(6,182,212,0.1);    color: #06b6d4; border: 1px solid rgba(6,182,212,0.2); }
+        .action-EMAIL_CHANGE   { background: rgba(245,158,11,0.1);   color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); }
+        .action-ADDRESS_CHANGE { background: rgba(124,58,237,0.12);  color: #a78bfa; border: 1px solid rgba(124,58,237,0.25); }
+
+        .empty-state { text-align: center; padding: 50px 20px; }
+        .empty-icon  { font-size: 36px; margin-bottom: 12px; opacity: 0.4; }
+        .empty-text  { font-family: var(--mono); font-size: 12px; color: var(--muted); letter-spacing: 0.08em; }
+
+        @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+        .skeleton td {
+            background: linear-gradient(90deg, var(--border) 25%, #162035 50%, var(--border) 75%);
+            background-size: 200% 100%; animation: shimmer 1.4s infinite;
+            color: transparent !important; border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+
+    <!-- Topbar -->
+    <div class="topbar">
+        <div class="brand">
+            <div class="brand-icon">⬡</div>
+            <div>
+                <div class="brand-name">Dashboard</div>
+                <div class="brand-sub">// user control panel</div>
+            </div>
+        </div>
+        <div class="online-badge"><div class="dot"></div>SESSION ACTIVE</div>
+    </div>
+
+    <!-- Welcome -->
+    <div class="welcome-banner">
+        <div class="welcome-bg"></div>
+        <div class="welcome-left">
+            <h3>Welcome <span id="welcome"></span> 👋</h3>
+            <p>// manage your profile and account details below</p>
+        </div>
+        <div class="avatar">🧑‍💻</div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('profile', this)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+            </svg>
+            Profile
+        </button>
+        <button class="tab-btn" onclick="switchTab('activity', this)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+            Activity Logs
+        </button>
+
+       <button class="tab-btn" onclick="window.location.href='/crypto'">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+    </svg>
+    Crypto Transfer
+</button>
+
+    </div>
+
+    <!-- ── PROFILE TAB ── -->
+    <div class="tab-panel active" id="tab-profile">
+
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-card-icon purple">📧</div>
+                <div>
+                    <div class="info-card-label">Email</div>
+                    <div class="info-card-value" id="email">—</div>
+                </div>
+            </div>
+            <div class="info-card">
+                <div class="info-card-icon cyan">🏠</div>
+                <div>
+                    <div class="info-card-label">Address</div>
+                    <div class="info-card-value" id="address">—</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <div class="form-card-title">
+                <h3>Update Profile</h3>
+                <span class="tag">EDITABLE</span>
+            </div>
+
+            <form id="updateForm">
+                <div class="field">
+                    <label>Email Address</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/>
+                            </svg>
+                        </span>
+                        <input type="email" name="email" id="emailInput" placeholder="your@email.com" required>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Wallet / Address</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="7" width="20" height="14" rx="2"/>
+                                <path d="M16 3H8a2 2 0 0 0-2 2v2h12V5a2 2 0 0 0-2-2z"/>
+                                <circle cx="17" cy="14" r="1"/>
+                            </svg>
+                        </span>
+                        <input type="text" name="address" id="addressInput" placeholder="0x...">
+                    </div>
+                </div>
+
+                <hr>
+                <button type="submit">Save Changes →</button>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- ── ACTIVITY LOGS TAB ── -->
+    <div class="tab-panel" id="tab-activity">
+
+        <div class="logs-header">
+            <div class="logs-title">
+                <h3>Activity Logs</h3>
+                <span class="log-count" id="logCount">loading...</span>
+            </div>
+            <button class="refresh-btn" onclick="loadActivityLogs()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 4 23 10 17 10"/>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                </svg>
+                REFRESH
+            </button>
+        </div>
+
+        <div class="logs-table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>IP Address</th>
+                        <th>Email</th>
+                        <th>Action</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody id="logTable">
+                    <tr class="skeleton"><td>loading...</td><td>loading...</td><td>loading...</td><td>loading...</td></tr>
+                    <tr class="skeleton"><td>loading...</td><td>loading...</td><td>loading...</td><td>loading...</td></tr>
+                    <tr class="skeleton"><td>loading...</td><td>loading...</td><td>loading...</td><td>loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+// ── Tab switching ──
+function switchTab(name, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+    if (name === 'activity') loadActivityLogs();
+}
+
+// 🔹 Load from localStorage
+let user = JSON.parse(localStorage.getItem("user"));
+
+if (user) {
+    document.getElementById("welcome").innerText = "Welcome " + user.username;
+    document.getElementById("email").innerText = user.email;
+    document.getElementById("address").innerText = user.address;
+
+    document.getElementById("emailInput").value = user.email;
+    document.getElementById("addressInput").value = user.address;
+}
+
+// 🔹 Update
+document.getElementById("updateForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    let formData = new FormData(this);
+
+    let res = await fetch("/update", {
+        method: "POST",
+        body: formData
+    });
+
+    if (res.ok) {
+
+        // update localStorage
+        user.email = formData.get("email");
+        user.address = formData.get("address");
+
+        localStorage.setItem("user", JSON.stringify(user));
+
+        alert("Updated Successfully");
+        location.reload();
+    }
+});
+
+
+
+
+
+
+
+
+// 🔹 Load activity logs — filtered to logged-in user's email only
+
+
+async function loadActivityLogs() {
+    const tbody = document.getElementById("logTable");
+
+    tbody.innerHTML = `
+        <tr class="skeleton"><td>loading...</td><td>loading...</td><td>loading...</td><td>loading...</td></tr>
+        <tr class="skeleton"><td>loading...</td><td>loading...</td><td>loading...</td><td>loading...</td></tr>
+        <tr class="skeleton"><td>loading...</td><td>loading...</td><td>loading...</td><td>loading...</td><tr>
+    `;
+
+    try {
+        let res = await fetch("/logs");
+
+        // 🚨 Check if response is OK
+        if (!res.ok) {
+            throw new Error(`Server error: ${res.status}`);
+        }
+
+        // 🚨 Read as text first (debug-friendly)
+        let text = await res.text();
+
+        // 🚨 Try parsing JSON safely
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            console.error("Response is not JSON:", text);
+            throw new Error("Invalid JSON response (likely HTML)");
+        }
+
+        // Filter to only this user's records
+        const userEmail = user ? user.email : null;
+        const filtered = userEmail
+            ? data.filter(log => log.email === userEmail)
+            : data;
+
+        document.getElementById("logCount").textContent =
+            filtered.length + " record" + (filtered.length !== 1 ? "s" : "");
+
+        tbody.innerHTML = "";
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = `
+                <tr><td colspan="4">
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <div class="empty-text">No activity found for your account</div>
+                    </div>
+                </td></tr>`;
+            return;
+        }
+
+        // Newest first
+        [...filtered].reverse().forEach(log => {
+            const actionKey = "action-" + log.action.replace(/\s+/g, "_");
+            tbody.innerHTML += `
+            <tr>
+                <td class="td-ip">${log.ip}</td>
+                <td class="td-email">${log.email}</td>
+                <td><span class="action-badge ${actionKey}">${log.action}</span></td>
+                <td class="td-ts">${log.timestamp}</td>
+            </tr>`;
+        });
+
+    } catch (err) {
+        tbody.innerHTML = `
+            <tr><td colspan="4">
+                <div class="empty-state">
+                    <div class="empty-icon">⚠️</div>
+                    <div class="empty-text">Failed to load logs — ${err.message}</div>
+                </div>
+            </td></tr>`;
+    }
+}
+
+</script>
+
+</body>
+</html>

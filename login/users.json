@@ -1,0 +1,195 @@
+[
+    {
+        "email": "admin@gmail.com",
+        "username": "admin",
+        "password": "0c10312b3880eaeb9f5068c3c730501b936cb4804692c234838508e7ad627d90",
+        "private_key": "946c0797058132583c1ee7b9e9416229de3e228eb30ded62a268fa101a5286df"
+    },
+    {
+        "email": "a3@gmail.com",
+        "username": "a2",
+        "password": "2c3a4249d77070058649dbd822dcaf7957586fce428cfb2ca88b94741eda8b07",
+        "private_key": "b1553ddd31c2c8c3538f9891b3d26bd07d056854fa904cb8a6da6444b74ee06f",
+        "balance": 100000,
+        "total_amount": 150000,
+        "deposit": 50000,
+        "fd": 30000,
+        "address": "mumbai"
+    },
+    {
+        "email": "kaka@gmail.com",
+        "username": "kaka",
+        "password": "3a38f42cfb8f4ad7419c4c4a5bdbbf2f447ebf05d6dce5de5daa670469dc0e56",
+        "private_key": "c7dd30b6d3a33291de84e546fe32d73775572ca698611ac8f22b57c365e44636",
+        "balance": 100000,
+        "total_amount": 150000,
+        "deposit": 50000,
+        "fd": 30000,
+        "address": "india"
+    },
+    {
+        "email": "tejas@gmail.com",
+        "username": "ojas",
+        "password": "74354577ae1274a6f424d105378237554e622d0e296426962400b5ff99a01efd",
+        "private_key": "984d7c64da0e5822d14e5488ab054b619327e754244cc3f752f325350a833f2e",
+        "balance": 100000,
+        "total_amount": 150000,
+        "deposit": 50000,
+        "fd": 30000,
+        "address": "delhi"
+    },
+    {
+        "email": "abhay@sigce.in",
+        "username": "abhay",
+        "password": "0c10312b3880eaeb9f5068c3c730501b936cb4804692c234838508e7ad627d90",
+        "private_key": "64233a7e551c5808fdc074c12938fd45aba9366f4f7ee752a510f1243c592dd0",
+        "balance": 100000,
+        "total_amount": 150000,
+        "deposit": 50000,
+        "fd": 30000,
+        "address": "mumbai"
+    },
+    {
+        "email": "abc@gmail.com",
+        "username": "abcc",
+        "password": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+        "private_key": "df7c6cc08ae10496e4de32cb709d8eb3fdb841b6bc5ddf329903108ed40a17d2",
+        "balance": 100000,
+        "total_amount": 150000,
+        "deposit": 50000,
+        "fd": 30000,
+        "address": "delhi"
+    },
+    {
+        "email": "archana@gmail.com",
+        "username": "archanamam",
+        "password": "0c10312b3880eaeb9f5068c3c730501b936cb4804692c234838508e7ad627d90",
+        "private_key": "2a7d6e4760af33a006d4486f28eb48c0028ead06ab29b2eb74eb28b7fe506347",
+        "balance": 100000,
+        "total_amount": 150000,
+        "deposit": 50000,
+        "fd": 30000,
+        "address": "Not Set"
+    },
+    {
+        "email": "ram@gmail.com",
+        "username": "ram",
+        "password": "a631f4488a457da27b4a64dc8f2d85085b50ff568be99125cf6f8f45c759878e",
+        "private_key": "00bd1f628c87b940ca207da0206234c5e024811ac2a1082630a7ee3c164607f4",
+        "balance": 100000,
+        "total_amount": 150000,
+        "deposit": 50000,
+        "fd": 30000,
+        "address": "mumbai"
+    },
+    {
+        "email": "mama@gmail.com",
+        "username": "mama",
+        "password": "7af50550d27bc2b4f0ce36767e5572991e33c38cd645319caf369acd06788ee0",
+        "private_key": "a4a9f653b22ac91f74270d0bf931a159ba28b0c307d482a5c6aa2377e8b5f68e",
+        "balance": 100000,
+        "total_amount": 150000,
+        "deposit": 50000,
+        "fd": 30000,
+        "address": "Patna"
+    },
+    {
+        "email": "didi@gmail.com",
+        "username": "didi",
+        "password": "abce8bca2c35a151e58b8ba2884d24b822301bc238301097631442453e34fec6",
+        "private_key": "3669841bdda7a800bdf03f760fe26a6fdc4715e70a34f72d8f777469baeb174d",
+        "balance": 100000,
+        "total_amount": 150000,
+        "deposit": 50000,
+        "fd": 30000,
+        "address": "Not Set"
+    },
+    {
+        "email": "oju@gmail.com",
+        "username": "oju",
+        "password": "97e9fe5d9cb9967c4212351febf48503edd769518efb05b298eed1e3ab09ba2e",
+        "private_key": "209c6608e48c519f2adcda04e72bce5b1310c6b67e948d5a94733e6aae61302f",
+        "balance": 100000,
+        "total_amount": 150000,
+        "deposit": 50000,
+        "fd": 30000,
+        "address": "Not Set"
+    },
+    {
+        "email": "tai@gmail.com",
+        "username": "tai",
+        "password": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+        "private_key": "39ea53719f78d84e8041a8216b167cca427883ffe00c99f723735397bf5945de",
+        "balance": 100000,
+        "total_amount": 150000,
+        "deposit": 50000,
+        "fd": 30000,
+        "address": "Not Set"
+    },
+    {
+        "email": "tai@gmail.com",
+        "username": "tai",
+        "password": "74354577ae1274a6f424d105378237554e622d0e296426962400b5ff99a01efd",
+        "private_key": "8215d47b68885a0582ac410d4f774c361d2300a78034e298b2ee98483d098b69",
+        "balance": 100000,
+        "total_amount": 150000,
+        "deposit": 50000,
+        "fd": 30000,
+        "address": "Not Set"
+    },
+    {
+        "email": "pappa@gmail.com",
+        "username": "pappa",
+        "password": "794316587e140e7a2c010c76eb788c09c43d8f1d8698912a87d892a53ed80895",
+        "private_key": "e9fdc9f1801ab27e9c27778d2f9ef575b7ccd6c12ad65b07d7cb14aac15d3d4e",
+        "balance": 100000,
+        "total_amount": 150000,
+        "deposit": 50000,
+        "fd": 30000,
+        "address": "pok"
+    },
+    {
+        "email": "abcd@gmail.com",
+        "username": "abcd",
+        "password": "88d4266fd4e6338d13b845fcf289579d209c897823b9217da3e161936f031589",
+        "private_key": "cef5f961d3788116c64ac5d4ff1122cbe359623636b6402eb299e894ab444e61",
+        "balance": 100000,
+        "total_amount": 150000,
+        "deposit": 50000,
+        "fd": 30000,
+        "address": "Not Set"
+    },
+    {
+        "email": "sigce@gmail.com",
+        "username": "sigce",
+        "password": "0c10312b3880eaeb9f5068c3c730501b936cb4804692c234838508e7ad627d90",
+        "private_key": "764bb69dfac6d0237ce7228851673f834454628b9cf1d6a44f219529b9ef35f1",
+        "balance": 100000,
+        "total_amount": 150000,
+        "deposit": 50000,
+        "fd": 30000,
+        "address": "india"
+    },
+    {
+        "email": "test@gmail.com",
+        "username": "test",
+        "password": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+        "private_key": "d81085f0c32c87be2755d1b341e25b86d5ef48aa4a5e572bec39b449a47f3585",
+        "balance": 100000,
+        "total_amount": 150000,
+        "deposit": 50000,
+        "fd": 30000,
+        "address": "Not Set"
+    },
+    {
+        "email": "swanik@gmail.com",
+        "username": "swanik",
+        "password": "107fd5150a3ab8120050e0de3b5182f1e60a0b5f82044f6036a0f90b344e87fa",
+        "private_key": "49b7ec53fab75ec751c11d07ecc1190f3d5e8a5cd2d21bd18584f192c68aafc0",
+        "balance": 100000,
+        "total_amount": 150000,
+        "deposit": 50000,
+        "fd": 30000,
+        "address": "Chunabhatti"
+    }
+]

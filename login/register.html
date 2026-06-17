@@ -1,0 +1,387 @@
+<!--
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+</head>
+<body>
+
+<h2>Register</h2>
+
+<form method="POST">
+    <input type="email" name="email" placeholder="Email" required><br><br>
+    <input type="text" name="username" placeholder="Username" required><br><br>
+    <input type="password" name="password" placeholder="Password" required><br><br>
+    <button type="submit">Register</button>
+</form>
+
+<a href="/login">Go to Login</a>
+
+</body>
+</html>
+
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:      #03060a;
+            --surface: #060d15;
+            --card:    #08121e;
+            --border:  #0e2235;
+            --accent:  #00ffb2;
+            --accent2: #0055ff;
+            --text:    #cce8e0;
+            --muted:   #1e4d3a;
+            --mono:    'Share Tech Mono', monospace;
+            --sans:    'Rajdhani', sans-serif;
+        }
+
+        body {
+            font-family: var(--sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Diagonal stripe grid */
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background-image:
+                linear-gradient(135deg, rgba(0,255,178,0.025) 1px, transparent 1px),
+                linear-gradient(225deg, rgba(0,255,178,0.025) 1px, transparent 1px);
+            background-size: 48px 48px;
+            pointer-events: none;
+            animation: slide 30s linear infinite;
+        }
+
+        @keyframes slide { to { background-position: 48px 48px; } }
+
+        /* Glow blobs */
+        body::after {
+            content: '';
+            position: fixed; inset: 0;
+            background:
+                radial-gradient(ellipse 600px 500px at 80% 70%, rgba(0,255,178,0.06) 0%, transparent 65%),
+                radial-gradient(ellipse 500px 400px at 10% 20%, rgba(0,85,255,0.07) 0%, transparent 65%);
+            pointer-events: none;
+        }
+
+        /* ── Card ── */
+        .card {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 420px;
+            margin: 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            padding: 44px 40px 38px;
+            box-shadow:
+                0 0 0 1px rgba(0,255,178,0.04),
+                0 40px 90px rgba(0,0,0,0.7),
+                inset 0 1px 0 rgba(0,255,178,0.07);
+            animation: rise 0.55s cubic-bezier(.22,.68,0,1.2) both;
+        }
+
+        @keyframes rise {
+            from { opacity: 0; transform: translateY(30px) scale(0.96); }
+            to   { opacity: 1; transform: translateY(0)    scale(1);    }
+        }
+
+        /* Top glow line */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 12%; right: 12%; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0.6;
+            border-radius: 999px;
+        }
+
+        /* Top-right corner bracket */
+        .card::after {
+            content: '';
+            position: absolute;
+            top: -1px; right: -1px;
+            width: 38px; height: 38px;
+            border-top: 2px solid var(--accent);
+            border-right: 2px solid var(--accent);
+            border-radius: 0 22px 0 0;
+            opacity: 0.45;
+        }
+
+        /* Bottom-left corner bracket */
+        .corner-bl {
+            position: absolute;
+            bottom: -1px; left: -1px;
+            width: 38px; height: 38px;
+            border-bottom: 2px solid var(--accent2);
+            border-left: 2px solid var(--accent2);
+            border-radius: 0 0 0 22px;
+            opacity: 0.4;
+        }
+
+        /* ── Header ── */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            margin-bottom: 34px;
+        }
+
+        .logo-icon {
+            width: 44px; height: 44px;
+            background: linear-gradient(135deg, #004dcc, var(--accent));
+            border-radius: 11px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 21px;
+            box-shadow: 0 0 22px rgba(0,255,178,0.28);
+            flex-shrink: 0;
+        }
+
+        .logo-text h2 {
+            font-family: var(--sans);
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 0.07em;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .logo-text p {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--muted);
+            letter-spacing: 0.13em;
+            margin-top: 3px;
+        }
+
+        /* ── Step indicators ── */
+        .steps {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 26px;
+        }
+
+        .step {
+            flex: 1;
+            height: 3px;
+            border-radius: 999px;
+            background: var(--border);
+            transition: background 0.4s;
+        }
+
+        .step.active {
+            background: linear-gradient(90deg, var(--accent2), var(--accent));
+        }
+
+        /* ── Fields ── */
+        .field {
+            margin-bottom: 18px;
+            animation: fadeField 0.4s ease both;
+        }
+
+        .field:nth-child(1) { animation-delay: 0.05s; }
+        .field:nth-child(2) { animation-delay: 0.12s; }
+        .field:nth-child(3) { animation-delay: 0.19s; }
+
+        @keyframes fadeField {
+            from { opacity: 0; transform: translateX(-10px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        .field label {
+            display: block;
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.15em;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 7px;
+        }
+
+        .input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 13px;
+            color: var(--muted);
+            display: flex;
+            pointer-events: none;
+            transition: color 0.2s;
+        }
+
+        .input-wrap:focus-within .input-icon { color: var(--accent); }
+
+        .field input {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 13px 14px 13px 42px;
+            font-family: var(--mono);
+            font-size: 13px;
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .field input::placeholder { color: #1a3a30; }
+
+        .field input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0,255,178,0.1);
+        }
+
+        /* ── Divider ── */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 24px 0 20px;
+        }
+
+        /* ── Submit button ── */
+        button[type="submit"] {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent2), var(--accent));
+            color: #020c09;
+            font-family: var(--sans);
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.15s, box-shadow 0.2s;
+        }
+
+        button[type="submit"]::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: rgba(255,255,255,0.12);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 32px rgba(0,255,178,0.3);
+        }
+
+        button[type="submit"]:hover::before { opacity: 1; }
+        button[type="submit"]:active { transform: translateY(0); }
+
+        /* ── Login link ── */
+        .login-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.07em;
+            color: var(--muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .login-link span {
+            color: var(--accent);
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .login-link:hover { color: var(--text); }
+        .login-link:hover span { border-color: var(--accent); }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="corner-bl"></div>
+
+    <div class="logo">
+        <div class="logo-icon">✦</div>
+        <div class="logo-text">
+            <h2>Create Account</h2>
+            <p>// new identity registration</p>
+        </div>
+    </div>
+
+    <!-- Visual step progress -->
+    <div class="steps">
+        <div class="step active"></div>
+        <div class="step active"></div>
+        <div class="step active"></div>
+    </div>
+
+    <form method="POST">
+
+        <div class="field">
+            <label>Email Address</label>
+            <div class="input-wrap">
+                <span class="input-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/>
+                    </svg>
+                </span>
+                <input type="email" name="email" placeholder="you@example.com" required>
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Username</label>
+            <div class="input-wrap">
+                <span class="input-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+                    </svg>
+                </span>
+                <input type="text" name="username" placeholder="your_handle" required>
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Password</label>
+            <div class="input-wrap">
+                <span class="input-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                </span>
+                <input type="password" name="password" placeholder="••••••••" required>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <button type="submit">Create Account →</button>
+
+    </form>
+
+    <a href="/login" class="login-link">Already have an account? <span>Sign in</span></a>
+</div>
+
+</body>
+</html>
