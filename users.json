@@ -1,0 +1,13 @@
+[
+    {
+        "email": "0day0ju@gmail.com",
+        "username": "0ok",
+        "password": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+        "private_key": "32e4e9d0364cf4a7686f864bc952f2531aa52bfcfade8c32afd73dff8731bab0",
+        "balance": 100000,
+        "total_amount": 150000,
+        "deposit": 50000,
+        "fd": 30000,
+        "address": "Not Set"
+    }
+]
